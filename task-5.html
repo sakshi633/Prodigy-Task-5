@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4caf50;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .weather-info {
+      margin-top: 20px;
+    }
+
+    .weather-info h2 {
+      margin-bottom: 10px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px;
+      }
+
+      input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌦️ Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Check Weather</button>
+
+    <div class="weather-info" id="weatherInfo"></div>
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      const weatherInfo = document.getElementById("weatherInfo");
+      const errorMsg = document.getElementById("errorMsg");
+      const apiKey = "YOUR_API_KEY"; // Replace with your OpenWeatherMap API key
+
+      if (city === "") {
+        errorMsg.textContent = "Please enter a city name.";
+        weatherInfo.innerHTML = "";
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.cod === "404") {
+          errorMsg.textContent = "City not found.";
+          weatherInfo.innerHTML = "";
+        } else {
+          errorMsg.textContent = "";
+          weatherInfo.innerHTML = `
+            <h2>${data.name}, ${data.sys.country}</h2>
+            <p><strong>Temperature:</strong> ${data.main.temp}°C</p>
+            <p><strong>Condition:</strong> ${data.weather[0].description}</p>
+            <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+          `;
+        }
+      } catch (error) {
+        errorMsg.textContent = "Error fetching weather data.";
+        weatherInfo.innerHTML = "";
+      }
+    }
+  </script>
+
+</body>
+</html>
